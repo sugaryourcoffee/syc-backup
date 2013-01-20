@@ -2,6 +2,8 @@ require 'test/unit'
 require 'shoulda'
 require_relative '../lib/backup/options'
 
+# Test that user input is correctly interpreted and provided to other classes
+# over methods.
 class TestOptions < Test::Unit::TestCase
 
   context "Erroneous user input" do
