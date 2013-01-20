@@ -36,16 +36,36 @@ module Backup
       c.join(' ')
     end
 
+    # Check if all requested arguments are provided. If arguments are missing a
+    # exit code not equal to 0 is set. Following exit codes are set
+    #   Argument          Exit code
+    #   database          0001
+    #   user              0010
+    #   password          0100
+    #   cron              1000
+    # If for instance the database and the user is missing the exit code will
+    # return 3. And can be caught with
+    #   begin
+    #     opts = Options.new(ARGV)
+    #   rescue ExitStatus => e
+    #     puts "database missing" if e.status == 1
+    #     puts "user missing"     if e.status == 2
+    #     puts "password missing" if e.status == 4
+    #     puts "cron invalid"     if e.status == 8
+    #   end
     def check_for_missing_arguments
       @exit_code |= 0b0001 unless @database
       @exit_code |= 0b0010 unless @user
       @exit_code |= 0b0100 unless @password
     end
 
+    # Initializes values as the backup folder with a default value if not
+    # provided by the user
     def initialize_default_arguments_if_missing
       @backup_folder = DEFAULT_BACKUP_FOLDER unless @backup_folder
     end
 
+    # Parses the user input and initializes the application
     def parse(argv)
 
       OptionParser.new do |opts|
