@@ -1,0 +1,2 @@
+== SYC-Backup
+Backing up a Drupal database and optionally the Drupal web site folder.
