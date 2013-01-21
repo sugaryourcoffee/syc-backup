@@ -43,9 +43,9 @@ class TestMySQLBackup < Test::Unit::TestCase
     end
 
     teardown do
-      File.delete "test_*"
-      File.delete "test/backup/test_*"
-      Dir.rm "test/backup"
+      Dir["test_*"].each { |file| File.delete file }
+      Dir["test/backup/test_*"].each { |file| File.delete file }
+      Dir.rmdir "test/backup" if File.exists? "test/backup"
     end
 
     should "create a database backup file in the default folder" do
