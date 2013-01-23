@@ -7,51 +7,68 @@ require_relative '../lib/backup/options'
 class TestOptions < Test::Unit::TestCase
 
   context "Erroneous user input" do
-    should "return no error (exit code = 0) when no input is given" do
+    should "return error code 16 due to missing database and files" do
       begin
-        opts = Backup::Options.new([])
+        opts = Backup::Options.new(["--no-compress", "--override",
+                                    "~/backup/old"])
       rescue SystemExit => e
-        assert e.status == 0
+        assert_equal 16, e.status
       end
     end
 
-    should "return error code 1 due to no database input" do
+    should "return error code 16 due to no database input" do
       begin
         opts = Backup::Options.new(["-u", "user", "-p", "pass"])
       rescue SystemExit => e
-        assert e.status == 1
+        assert_equal 16, e.status
       end
     end
 
     should "return error code 2 due to missing user" do
       begin
-        opts = Backup::Options.new(["database", "-p", "pass"])
+        opts = Backup::Options.new(["-d", "database", "-p", "pass"])
       rescue SystemExit => e
-        assert e.status == 2
+        assert_equal 2, e.status
       end
     end
 
     should "return error code 4 due to missing password" do
       begin
-        opts = Backup::Options.new(["database", "-u", "user"])
+        opts = Backup::Options.new(["-d", "database", "-u", "user"])
       rescue SystemExit => e
-        assert e.status == 4
+        assert_equal 4, e.status
       end
     end
 
-    should "return error code 3 due to missing database and user" do
+    should "return error code 16 due to missing database and user" do
       begin
         opts = Backup::Options.new(["-p", "pass"])
       rescue SystemExit => e
-        assert e.status == 3
+        assert_equal 16, e.status
       end
     end
 
     should "return error code 6 due to missing user and password" do
       begin
-        opts = Backup::Options.new(["database"])
+        opts = Backup::Options.new(["-d", "database"])
       rescue SystemExit => e
-        assert e.status == 6
+        assert_equal 6, e.status
+      end
+    end
+
+    should "return error code 1 due to missing database" do
+      begin
+        opts = Backup::Options.new(["-f", "a,b,c", "-u", "user", "-p", "pass"])
+      rescue SystemExit => e
+        assert_equal 1, e.status
+      end
+    end
+
+    should "return error code 3 due to missing database and user" do
+      begin
+        opts = Backup::Options.new(["-f", "a", "-p", "pass"])
+      rescue SystemExit => e
+        assert_equal 3, e.status
       end
     end
 
@@ -59,16 +76,24 @@ class TestOptions < Test::Unit::TestCase
       begin
         opts = Backup::Options.new(["-x"])
       rescue SystemExit => e
-        assert e.status == -1
+        assert_equal -1, e.status
       end
     end
 
-    should "return error code -8 due to wrong cron values" do
+    should "return error code -1 due to missing argument for -f" do
       begin
-        opts = Backup::Options.new(["database", "-u", "user", "-p", "pass",
-                                    "-c", "60,24,32,*,d,e"])
+        opts = Backup::Options.new(["-f"])
       rescue SystemExit => e
-        assert e.status == 8
+        assert_equal -1, e.status
+      end
+    end
+
+    should "return error code 8 due to wrong cron values" do
+      begin
+        opts = Backup::Options.new(["-d", "database", "-u", "user", "-p", 
+                                    "pass", "--cron", "60,24,32,*,d,e"])
+      rescue SystemExit => e
+        assert_equal 8, e.status
       end
     end
 
@@ -77,38 +102,40 @@ class TestOptions < Test::Unit::TestCase
   context "Correct user input" do
 
     should "return database, user, password and default backup_folder" do
-      opts = Backup::Options.new(["database", "-u", "user", "-p", "pass"])
+      opts = Backup::Options.new(["-d", "database", "-u", "user", "-p", "pass"])
       assert_equal "database", opts.database
       assert_equal "user", opts.user
       assert_equal "pass", opts.password
-      assert_equal Backup::Options::DEFAULT_BACKUP_FOLDER, opts.backup_folder
+      assert_match /#{Backup::Options::DEFAULT_BACKUP_FOLDER}\d{8}-\d{6}\//, 
+                   opts.backup_folder
     end
 
     should "return database and specified backup folder" do
-      opts = Backup::Options.new(["database", "-u", "user", "-p", "pass",
-                                  "-b", "~/backups/2013/drupal"])
+      opts = Backup::Options.new(["-d", "database", "-u", "user", "-p", "pass",
+                                  "~/backups/2013/drupal"])
       assert_equal "database", opts.database
       assert_equal "~/backups/2013/drupal", opts.backup_folder
     end
 
-    should "return database and website folder" do
-      opts = Backup::Options.new(["database", "-u", "user", "-p", "pass",
-                                  "-w", "website"])
+    should "return database and file" do
+      opts = Backup::Options.new(["-d", "database", "-u", "user", "-p", "pass",
+                                  "-f", "file_a"])
       assert_equal "database", opts.database
-      assert_equal "website", opts.website_folder
+      assert_equal "file_a", opts.files[0]
     end
 
-    should "return database, website folder and cron schedule" do
-      opts = Backup::Options.new(["database", "-u", "user", "-p", "pass",
-                                  "-w", "website", "-c", "15,3,*,*,*"])
+    should "return database, files and cron schedule" do
+      opts = Backup::Options.new(["-d", "database", "-u", "user", "-p", "pass",
+                                  "-f", "file_a,file_b", 
+                                  "--cron", "15,3,*,*,*"])
       assert_equal "database", opts.database
-      assert_equal "website", opts.website_folder
+      assert_equal 2, opts.files.size
       assert_equal "15 3 * * *", opts.cron
     end
 
-    should "return cron schedule even though to many arguments" do
-      opts = Backup::Options.new(["database", "-u", "user", "-p", "pass",
-                                  "-c", "15,3,*,1,7,*,*,a"])
+    should "return cron schedule even though too many arguments" do
+      opts = Backup::Options.new(["-d", "database", "-u", "user", "-p", "pass",
+                                  "--cron", "15,3,*,1,7,*,*,a"])
       assert_equal "15 3 * 1 7", opts.cron
     end
 
@@ -126,6 +153,28 @@ class TestOptions < Test::Unit::TestCase
       rescue SystemExit => e
         assert e.status == 0
       end
+    end
+
+    should "return files provided by user" do
+      opts = Backup::Options.new(["-f", "a,b,c"])
+      assert_equal ["a","b","c"], opts.files
+    end
+
+    should "return files stripped off trailing and leading blanks" do
+      opts = Backup::Options.new(["-f", "a, b, c "])
+      assert_equal ["a","b","c"], opts.files
+    end
+
+    should "return override" do
+      opts = Backup::Options.new(["-f", "a,b,c", "~/backup/new", 
+                                  "--override"])
+      assert_equal ["a","b","c"], opts.files
+      assert_equal true, opts.override
+    end
+
+    should "return no-compress" do
+      opts = Backup::Options.new(["-f", "a,b,c", "--no-compress"])
+      assert_equal true, opts.no_compress
     end
 
   end
