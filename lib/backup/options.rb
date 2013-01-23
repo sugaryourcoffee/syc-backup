@@ -3,16 +3,26 @@ require 'optparse'
 module Backup
 
   class Options
-    DEFAULT_BACKUP_FOLDER = "~/backup/drupal"
-    attr_accessor :database, :user, :password, :website_folder, 
-                  :backup_folder, :cron
+    DEFAULT_BACKUP_FOLDER = "~/backup/"
+    attr_accessor :database, :user, :password, :files, 
+                  :backup_folder, :override, :cron, :no_compress
 
     def initialize(argv)
       @exit_code = 0
+      init_exit_messages
       parse(argv)
     end
 
     private
+
+    # Initializes the error messages belonging to the error codes
+    def init_exit_messages
+      @exit_message = {"1"  => "Database missing", 
+                       "2"  => "User missing", 
+                       "4"  => "Password missing",
+                       "8"  => "Invalid cron data",
+                       "16" => "Missing database or files"}
+    end
 
     # Checks the values provided in the array c whether they are valid cron 
     # values representing one of the values minute, hour, day of month, 
@@ -39,30 +49,37 @@ module Backup
     # Check if all requested arguments are provided. If arguments are missing a
     # exit code not equal to 0 is set. Following exit codes are set
     #   Argument          Exit code
-    #   database          0001
-    #   user              0010
-    #   password          0100
-    #   cron              1000
+    #   database           00001
+    #   user               00010
+    #   password           00100
+    #   cron               01000
+    #   files and database 10000
     # If for instance the database and the user is missing the exit code will
     # return 3. And can be caught with
     #   begin
     #     opts = Options.new(ARGV)
     #   rescue ExitStatus => e
-    #     puts "database missing" if e.status == 1
-    #     puts "user missing"     if e.status == 2
-    #     puts "password missing" if e.status == 4
-    #     puts "cron invalid"     if e.status == 8
+    #     puts "database missing"                 if e.status == 1
+    #     puts "user missing"                     if e.status == 2
+    #     puts "password missing"                 if e.status == 4
+    #     puts "cron invalid"                     if e.status == 8
+    #     puts "ether database or files required" if e.status == 16
     #   end
     def check_for_missing_arguments
-      @exit_code |= 0b0001 unless @database
-      @exit_code |= 0b0010 unless @user
-      @exit_code |= 0b0100 unless @password
+      if not @database and not @files
+        @exit_code |= 0b10000
+      elsif @database or @user or @password
+        @exit_code |= 0b00001 unless @database
+        @exit_code |= 0b00010 unless @user
+        @exit_code |= 0b00100 unless @password
+      end
     end
 
     # Initializes values as the backup folder with a default value if not
     # provided by the user
     def initialize_default_arguments_if_missing
-      @backup_folder = DEFAULT_BACKUP_FOLDER unless @backup_folder
+      timestamp = Time.now.strftime("%Y%m%d-%H%M%S") + '/'
+      @backup_folder = DEFAULT_BACKUP_FOLDER + timestamp unless @backup_folder
     end
 
     # Parses the user input and initializes the application
@@ -70,29 +87,40 @@ module Backup
 
       OptionParser.new do |opts|
         app_name = File.basename($PROGRAM_NAME)
-        opts.banner = "Backup a Drupal website and its database\n\n"+
-                      "Usage: #{app_name} [options] database_name"
+        opts.banner = "Backup files and a database to a backup folder\n\n"+
+                      "Usage: #{app_name} [options] [backup_folder]"
+
+        opts.on("-d", "--database DATABASE", "Database to backup") do |d|
+          #puts "database = #{d}"
+          @database = d
+        end
 
         opts.on("-u", "--user USER", "User of the database") do |u|
+          #puts "user = #{u}"
           @user = u
         end
         
         opts.on("-p", "--password PASSWORD", 
                 "User's password to access the database") do |p|
+          #puts "password = #{p}"
           @password = p
         end
 
-        opts.on("-w", "--website WEBSITE",
-                "The folder where the Drupal website lives") do |w|
-          @website_folder = w
+        opts.on("-f", "--file f1,f2,f3", Array,
+                "A list of files to backup") do |f|
+          @files = f.map {|f| f.strip}
         end
 
-        opts.on("-b", "--backup FOLDER",
-                "Folder where to save the backup to") do |t|
-          @backup_folder = t
+        opts.on("--no-compress",
+                "Do not compress the backed up files and database") do |n|
+          @no_compress = true
         end
 
-        opts.on("-c", "--cron min,hou,dom,mon,dow", Array,
+        opts.on("--override", "Override the backup folder if it exists") do |o|
+          @override = true
+        end
+
+        opts.on("--cron min,hou,dom,mon,dow", Array,
                 "Create a cron job that automatically ",
                 "invokes #{app_name}",
                 "min = minute        0..59",
@@ -115,19 +143,23 @@ module Backup
         end
 
         begin
-          puts argv.empty?
-          argv = ["-h"] if argv.empty?
           opts.parse!(argv)
         rescue OptionParser::ParseError => e
           STDERR.puts e.message, "\n", opts
           exit(-1)
         end
 
-        @database = argv.shift
+        @backup_folder = argv.shift
 
         check_for_missing_arguments
-        exit(@exit_code) if @exit_code > 0
 
+        @exit_code.size.times do |i|
+          result = @exit_code & 0b00001 << i
+          STDERR.puts @exit_message[result.to_s] if result > 0
+        end
+        
+        exit(@exit_code) if @exit_code > 0
+        
         initialize_default_arguments_if_missing 
       end
 
