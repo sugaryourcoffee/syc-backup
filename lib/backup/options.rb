@@ -78,8 +78,9 @@ module Backup
     # Initializes values as the backup folder with a default value if not
     # provided by the user
     def initialize_default_arguments_if_missing
-      timestamp = Time.now.strftime("%Y%m%d-%H%M%S") + '/'
+      timestamp = Time.now.strftime("%Y%m%d-%H%M%S")
       @backup_folder = DEFAULT_BACKUP_FOLDER + timestamp unless @backup_folder
+      @backup_folder += '/' unless @backup_folder.match(/.*\/\Z/)
     end
 
     # Parses the user input and initializes the application

@@ -1,3 +1,6 @@
+require 'fileutils'
+require 'open3'
+
 module Backup
 
   class FileBackup
@@ -6,7 +9,7 @@ module Backup
       @files = files
     end
 
-    def compress(files)
+    def compress(files, backup_folder)
       inexistent_files = check_for_inexistent files
       unless inexistent_files.empty?
         STDERR.puts "Cannot compress inexistent files"
@@ -14,6 +17,21 @@ module Backup
         STDERR.puts inexistent_files.join(" ")
         exit 2
       end
+
+      compress_file = Time.now.strftime("%Y%m%d-%H%M%S") + "_" + "files.tar.gz"
+
+      tar_command = "tar cfz #{compress_file} " + files.join(" ")
+
+      stdout_str, stderr_str, status = Open3.capture3(tar_command)
+
+      unless status.exitstatus == 0
+        STDERR.puts "There was a problem running tar command"
+        STDERR.puts "--> #{tar_command}"
+        STDERR.puts stderr_str
+        exit(2)
+      end
+
+      status.exitstatus
 
     end
 
@@ -31,13 +49,16 @@ module Backup
         STDERR.puts "#{inexistent_files.join(', ')}"
         exit 1
       end
-
+      
+      backup_folder += '/' unless backup_folder.match(/.*\/\Z/)
+      
       Dir.mkdir backup_folder unless File.exists? backup_folder
 
       backup_files = []
 
-      @files.with_index do |file, index|
-        
+      @files.each.with_index do |file, index|
+        backup_files << backup_file = backup_folder+File.basename(file)
+        FileUtils.cp file, backup_file
       end
 
       backup_files
