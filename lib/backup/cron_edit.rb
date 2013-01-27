@@ -5,6 +5,8 @@ module Backup
   # Adds or removes a command to the user's crontab.
   class CronEdit
 
+    CRON_ENTRIES_FILE = ".cron_entries"
+
     # Adds a command to the user's crontab. If the provided command is empty
     # add_command will exit the application with exit status -1.
     # The method uses the _crontab -l_ and _crontab file_ command. If the
@@ -27,13 +29,17 @@ module Backup
       unless entries.include? command
         entries << command
 
-        cron_entries_file = '.cron_entries'
+        cron_entries_file = CRON_ENTRIES_FILE #'.cron_entries'
         File.open(cron_entries_file, 'w') do |f|
           entries.each {|entry| f.puts entry}
         end
 
         write_crontab_command = "crontab #{cron_entries_file}"
+
         stdout, stderr, status = Open3.capture3(write_crontab_command)
+
+        cleanup
+
         unless status.exitstatus == 0
           STDERR.puts "There is a problem executing command"
           STDERR.puts write_crontab_command
@@ -74,15 +80,17 @@ module Backup
 
       entries.delete(command)
 
-      entries_file = ".entries_file"
+      cron_entries_file = CRON_ENTRIES_FILE #".cron_entries"
 
-      File.open(entries_file, 'w') do |file|
+      File.open(cron_entries_file, 'w') do |file|
         entries.each {|entry| file.puts entry}
       end
 
-      write_crontab_command = "crontab #{entries_file}"
+      write_crontab_command = "crontab #{cron_entries_file}"
 
       stdout, stderr, status = Open3.capture3(write_crontab_command)
+
+      cleanup
 
       unless status.exitstatus == 0
         STDERR.puts "There is a problem executing command"
@@ -93,6 +101,10 @@ module Backup
 
       status.exitstatus
 
+    end
+
+    def cleanup
+      File.delete CRON_ENTRIES_FILE if File.exists? CRON_ENTRIES_FILE
     end
   end
 end
