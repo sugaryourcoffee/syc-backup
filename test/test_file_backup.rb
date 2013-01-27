@@ -44,20 +44,13 @@ class TestFileBackup < Test::Unit::TestCase
 
     def teardown
       ["file1", "file2", "file3"].each {|f| FileUtils.rm f}
+      Dir["test/backup/file*"].each {|f| FileUtils.rm f}
     end
 
-    should "return backup file in default folder" do
+    should "backup file in specified folder" do
       fbu = Backup::FileBackup.new(["file1"])
       backup_files = fbu.backup("test/backup")
       assert_equal ["test/backup/file1"], backup_files
-    end
-
-    should "return backup file in specified folder" do
-
-    end
-
-    should "return compressed file in default folder" do
-
     end
 
     should "return compressed file in specified folder" do
