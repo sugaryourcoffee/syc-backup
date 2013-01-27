@@ -18,7 +18,9 @@ module Backup
         exit 2
       end
 
-      compress_file = Time.now.strftime("%Y%m%d-%H%M%S") + "_" + "files.tar.gz"
+      timestamp = Time.now.strftime("%Y%m%d-%H%M%S")
+      backup_folder += '/' unless backup_folder.match(/.*\/\Z/)
+      compress_file = backup_folder + timestamp + "_" + "files.tar.gz"
 
       tar_command = "tar cfz #{compress_file} " + files.join(" ")
 
