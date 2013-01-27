@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+
+<title>README - RDoc Documentation</title>
+
+<link type="text/css" media="screen" href="./rdoc.css" rel="stylesheet">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+</script>
+
+<script type="text/javascript" charset="utf-8" src="./js/jquery.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/navigation.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/search_index.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/search.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/searcher.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/darkfish.js"></script>
+
+
+<body class="file">
+<nav id="metadata">
+  <nav id="home-section" class="section">
+  <h3 class="section-header">
+    <a href="./index.html">Home</a>
+    <a href="./table_of_contents.html#classes">Classes</a>
+    <a href="./table_of_contents.html#methods">Methods</a>
+  </h3>
+</nav>
+
+
+  <nav id="search-section" class="section project-section" class="initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <h3 class="section-header">
+      <input type="text" name="search" placeholder="Search" id="search-field"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </h3>
+  </form>
+
+  <ul id="search-results" class="initially-hidden"></ul>
+</nav>
+
+
+  <div id="project-metadata">
+    <nav id="fileindex-section" class="section project-section">
+  <h3 class="section-header">Pages</h3>
+
+  <ul>
+  
+    <li class="file"><a href="./README_rdoc.html">README</a>
+  
+    <li class="file"><a href="./Rakefile.html">Rakefile</a>
+  
+  </ul>
+</nav>
+
+    <nav id="classindex-section" class="section project-section">
+  <h3 class="section-header">Class and Module Index</h3>
+
+  <ul class="link-list">
+  
+    <li><a href="./Backup.html">Backup</a>
+  
+    <li><a href="./Backup/CronEdit.html">Backup::CronEdit</a>
+  
+    <li><a href="./Backup/FileBackup.html">Backup::FileBackup</a>
+  
+    <li><a href="./Backup/MySQLBackup.html">Backup::MySQLBackup</a>
+  
+    <li><a href="./Backup/Options.html">Backup::Options</a>
+  
+    <li><a href="./Backup/Process.html">Backup::Process</a>
+  
+    <li><a href="./Backup/Runner.html">Backup::Runner</a>
+  
+    <li><a href="./TestCronEdit.html">TestCronEdit</a>
+  
+    <li><a href="./TestFileBackup.html">TestFileBackup</a>
+  
+    <li><a href="./TestMySQLBackup.html">TestMySQLBackup</a>
+  
+    <li><a href="./TestOptions.html">TestOptions</a>
+  
+    <li><a href="./TestProcess.html">TestProcess</a>
+  
+  </ul>
+</nav>
+
+  </div>
+</nav>
+
+<div id="documentation" class="description">
+  
+<h1 id="label-Backup+utility+for+database%2C+folders+and+files"><a href="Backup.html">Backup</a> utility for database, folders and files</h1>
+
+<p>Backs up a MySQL database, folders and files to a default folder (~/backup)
+or to a specified folder. If the –cron switch is provided the specified
+database and files are not backed up rather a cron job of the provided
+command is added to crontab.</p>
+
+<h2 id="label-Install">Install</h2>
+
+<p>The application can be installed with</p>
+
+<pre>$ gem install syc-backup</pre>
+
+<h2 id="label-Usage">Usage</h2>
+
+<p><a href="Backup.html">Backup</a> a database to the default folder
+_~/backup_</p>
+
+<pre>$ sycup -d database -uuser -ppass</pre>
+
+<p><a href="Backup.html">Backup</a> a MySQL database, a directory and files to
+the default folder</p>
+
+<pre>$ sycup -d database -uuser -ppass -f directory,file1,file2</pre>
+
+<p>Specify a backup folder</p>
+
+<pre>$ sycup backup/folder -d database -uuser -ppass -f directory,file1,file2</pre>
+
+<p>Override files in the backup folder if they exist</p>
+
+<pre>$ sycup backup/folder --override -f directory,file1,file2</pre>
+
+<p>Don’t compress the backup</p>
+
+<pre>$ sycup --no-compress -f directory,file1,file2</pre>
+
+<p>Create a cron job that is scheduled every day at 2:30</p>
+
+<pre>$ sycup -d database -uuser -ppass -f directory,file1 --cron 30,2,*,*,*</pre>
+
+<h2 id="label-Supported+Platform">Supported Platform</h2>
+
+<p>syc-backup has been tested with 1.9.3</p>
+
+<h2 id="label-Notes">Notes</h2>
+
+<p>The application backs up the MySQL database with <em>mysqldump</em>. The
+dumpfile has the form yyyymmdd-HHMMSS_databasename.sql. After the files are
+backed up the dumpfile will be deleted.</p>
+
+<p>If the –no-compress is provided the files are copied to the backup folder.
+Otherwise they are compressed with _tar cfz
+YYYYmmdd-HHMMSS_syc-backup.tar.gz_.</p>
+
+<p>If the –override switch is not provided the backup directory will be added
+a timestamp. So if you create a cron job you should every now and then
+delete obsolete backup folders.</p>
+
+<p>The source contains lib/backup/file_backup.rb which is not used in the
+application.</p>
+
+<h2 id="label-Tests">Tests</h2>
+
+<p>The tests create folders and files and will be deleted after the tests
+finish. <em>MySQLBackup</em> needs to run a MySQL database with a database
+<em>test</em> and a user <em>user</em> with the password <em>pass</em>.</p>
+
+<p>The test files live in the test folder and begin with test_.</p>
+
+<h2 id="label-Links">Links</h2>
+<ul><li><dl class="rdoc-list label-list"><dt><a href="http://sugaryourcoffee.github.com/syc-backup">sugaryourcoffee.github.com/syc-backup</a>
+<dd><ul><li>
+<p>RubyDoc</p>
+</li></ul>
+</dd></dl>
+</li><li><dl class="rdoc-list label-list"><dt><a href="http://www.github.com/sugaryourcoffee/syc-backup">www.github.com/sugaryourcoffee/syc-backup</a>
+<dd><ul><li>
+<p>Source code on GitHub</p>
+</li></ul>
+</dd></dl>
+</li><li><dl class="rdoc-list label-list"><dt><a href="http://syc.dyndns.org/drupal/content/backup-drupal-database">syc.dyndns.org/drupal/content/backup-drupal-database</a>
+<dd><ul><li>
+<p>Development notebook</p>
+</li></ul>
+</dd></dl>
+</li><li><dl class="rdoc-list label-list"><dt><a href="https://rubygems.org/gems/syc-backup">rubygems.org/gems/syc-backup</a>
+<dd><ul><li>
+<p>RubyGems</p>
+</li></ul>
+</dd></dl>
+</li></ul>
+
+</div>
+
+
+
+<footer id="validator-badges">
+  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
+  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.
+  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
+</footer>
+

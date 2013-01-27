@@ -3,6 +3,7 @@ require 'shoulda'
 require 'fileutils'
 require_relative '../lib/backup/file_backup.rb'
 
+# Tests the FileBackup class.
 class TestFileBackup < Test::Unit::TestCase
 
   context "Providing erroneous user input" do
@@ -45,6 +46,8 @@ class TestFileBackup < Test::Unit::TestCase
     def teardown
       ["file1", "file2", "file3"].each {|f| FileUtils.rm f}
       Dir["test/backup/file*"].each {|f| FileUtils.rm f}
+      Dir["test/backup/*.tar.gz"].each {|f| FileUtils.rm f}
+      Dir.rmdir "test/backup" if File.exists? "test/backup"
     end
 
     should "backup file in specified folder" do

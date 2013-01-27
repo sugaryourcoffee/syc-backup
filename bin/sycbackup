@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require 'backup/runner'
+
+runner = Backup::Runner.new(ARGV)
+runner.run

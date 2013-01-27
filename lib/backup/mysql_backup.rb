@@ -2,14 +2,20 @@ require 'open3'
 
 module Backup
 
+  # MySQLBackup creates a dump file of a MySQL database with _mysqldump_ and
+  # returns the dump file.
   class MySQLBackup
 
+    # database is the database to be backed up with the user that has the
+    # credentials to access the database with the provided password
     def initialize(database, user, password)
       @database = database
       @user = user
       @password = password
     end
 
+    # Compresses the MySQL dump file. If an error occurs when compressing the
+    # file an error message is printed and the application terminates
     def compress(backup_file)
       tar_file = backup_file + '.tar.gz'
       tar_command = "tar cfz #{tar_file} #{backup_file}"
@@ -26,6 +32,7 @@ module Backup
 
     end
 
+    # Creates a MySQL dump file and returns the file
     def backup(backup_folder="./")
       Dir.mkdir backup_folder unless File.exists? backup_folder
 

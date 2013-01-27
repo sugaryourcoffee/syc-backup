@@ -2,11 +2,14 @@ require 'optparse'
 
 module Backup
 
+  # Parses the command line options the user has provided on the command line
   class Options
+    # If the user doesn't provide a backup folder a default folder is used
     DEFAULT_BACKUP_FOLDER = "~/backup/"
     attr_accessor :database, :user, :password, :files, 
                   :backup_folder, :override, :cron, :no_compress
 
+    # Takes the arguments from the command line and parses them
     def initialize(argv)
       @exit_code = 0
       init_exit_messages
@@ -78,8 +81,14 @@ module Backup
     # Initializes values as the backup folder with a default value if not
     # provided by the user
     def initialize_default_arguments_if_missing
-      timestamp = Time.now.strftime("%Y%m%d-%H%M%S")
-      @backup_folder = DEFAULT_BACKUP_FOLDER + timestamp unless @backup_folder
+      unless @override
+        timestamp = Time.now.strftime("%Y%m%d-%H%M%S")
+        if @backup_folder and File.exists?(@backup_folder)
+          @backup_folder = File.dirname(@backup_folder) + '/' +
+                           File.basename(@backup_folder) + '_' + timestamp
+        end
+      end
+      @backup_folder = DEFAULT_BACKUP_FOLDER unless @backup_folder
       @backup_folder += '/' unless @backup_folder.match(/.*\/\Z/)
     end
 
@@ -114,7 +123,7 @@ module Backup
 
         opts.on("--no-compress",
                 "Do not compress the backed up files",
-                " and database") do |n|
+                "and database") do |n|
           @no_compress = true
         end
 
@@ -160,7 +169,10 @@ module Backup
           STDERR.puts @exit_message[result.to_s] if result > 0
         end
         
-        exit(@exit_code) if @exit_code > 0
+        if @exit_code > 0
+          puts opts
+          exit(@exit_code) 
+        end
         
         initialize_default_arguments_if_missing 
       end

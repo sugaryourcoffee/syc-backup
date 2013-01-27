@@ -48,7 +48,7 @@ module Backup
         end
       end
 
-      status.exitstatus
+      command 
 
     end
 
@@ -99,7 +99,7 @@ module Backup
         exit status.exitstatus
       end
 
-      status.exitstatus
+      command 
 
     end
 

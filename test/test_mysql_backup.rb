@@ -44,7 +44,7 @@ class TestMySQLBackup < Test::Unit::TestCase
 
     teardown do
       Dir["test_*"].each { |file| File.delete file }
-      Dir["test/backup/*"].each { |file| File.delete file }
+      Dir["test/backup/test_*"].each { |file| File.delete file }
       Dir.rmdir "test/backup" if File.exists? "test/backup"
     end
 

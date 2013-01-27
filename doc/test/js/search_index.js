@@ -1,1 +1,0 @@
-var search_data = {"index":{"searchIndex":["testmysqlbackup"],"longSearchIndex":["testmysqlbackup"],"info":[["TestMySQLBackup","","TestMySQLBackup.html","","<p>Tests for MySQLBackup class.\n<p>Expects a running MySQL database server with following data\n<p>table &mdash; test\n"]]}}
