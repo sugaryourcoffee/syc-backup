@@ -113,7 +113,8 @@ module Backup
         end
 
         opts.on("--no-compress",
-                "Do not compress the backed up files and database") do |n|
+                "Do not compress the backed up files",
+                " and database") do |n|
           @no_compress = true
         end
 
