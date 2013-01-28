@@ -32,7 +32,7 @@ module Backup
         exit 1
       end
 
-      Dir.mkdir @backup_folder unless File.exists? @backup_folder
+      FileUtils.mkdir_p @backup_folder unless File.exists? @backup_folder
 
       if @no_compress 
         copy_files 
