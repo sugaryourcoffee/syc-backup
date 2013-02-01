@@ -120,7 +120,8 @@ class TestOptions < Test::Unit::TestCase
       opts = Backup::Options.new(["-d", "database", "-u", "user", "-p", "pass",
                                   "~/backups/2013/drupal"])
       assert_equal "database", opts.database
-      assert_equal "~/backups/2013/drupal/", opts.backup_folder
+      assert_equal File.expand_path("~/backups/2013/drupal/"),
+                   File.expand_path(opts.backup_folder)
     end
 
     should "return database and file" do
