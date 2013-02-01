@@ -5,7 +5,7 @@ module Backup
   # Parses the command line options the user has provided on the command line
   class Options
     # If the user doesn't provide a backup folder a default folder is used
-    DEFAULT_BACKUP_FOLDER = "~/backup/"
+    DEFAULT_BACKUP_FOLDER = File.expand_path("~/backup/")
     attr_accessor :database, :user, :password, :files, 
                   :backup_folder, :override, :cron, :no_compress
 
@@ -89,6 +89,7 @@ module Backup
         end
       end
       @backup_folder = DEFAULT_BACKUP_FOLDER unless @backup_folder
+      @backup_folder = File.expand_path(@backup_folder)
       @backup_folder += '/' unless @backup_folder.match(/.*\/\Z/)
     end
 
