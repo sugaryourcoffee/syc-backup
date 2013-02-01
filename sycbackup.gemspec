@@ -3,7 +3,7 @@ Gem::Specification.new do |s|
   s.summary      = "Back up database and files or schedule cron job for backup"
   s.description  = "Back up database and files or schedule cron job for backup"
   s.requirements = ['No requirements']
-  s.version      = "0.0.1"
+  s.version      = "0.0.3"
   s.author       = "Pierre Sugar"
   s.email        = "pierre@sugaryourcoffee.de"
   s.homepage     = "http://syc.dyndns.org/drupal"
