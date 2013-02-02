@@ -39,10 +39,13 @@ class TestFileBackup < Test::Unit::TestCase
 
   context "Providing valid user input" do
 
+    # Create files to be backed up
     def setup
       ["file1", "file2", "file3"].each {|f| FileUtils.touch f}
     end
 
+    # Remove files previously created with setup and all created files and
+    # directories during processing backups
     def teardown
       ["file1", "file2", "file3"].each {|f| FileUtils.rm f}
       Dir["test/backup/file*"].each {|f| FileUtils.rm f}

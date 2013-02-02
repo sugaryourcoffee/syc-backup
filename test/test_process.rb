@@ -8,11 +8,14 @@ class TestProcess < Test::Unit::TestCase
 
   context "Process" do
 
+    # Create files to backup
     def setup
       @files = ["file1", "file2", "file3"]
       @files.each {|f| FileUtils.touch f}
     end
 
+    # Remove files that have created with setup and all files and directories
+    # created during backup processing
     def teardown
       @files.each {|f| File.delete f}
       Dir["test/backup_p/*"].each {|f| File.delete f if File.file? f}

@@ -9,7 +9,7 @@ require_relative '../lib/backup/mysql_backup.rb'
 # table::    test
 # user::     user
 # password:: pass
-#
+# 
 class TestMySQLBackup < Test::Unit::TestCase
 
   context "Providing erroneous user input" do

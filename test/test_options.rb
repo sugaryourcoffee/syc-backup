@@ -111,7 +111,7 @@ class TestOptions < Test::Unit::TestCase
       unless default_backup_folder_exists
         assert_match Backup::Options::DEFAULT_BACKUP_FOLDER, opts.backup_folder
       else
-        assert_match /#{Backup::Options::DEFAULT_BACKUP_FOLDER}\d{8}-\d{6}\//, 
+        assert_match /#{Backup::Options::DEFAULT_BACKUP_FOLDER}_\d{8}-\d{6}\//, 
                      opts.backup_folder
       end
     end
@@ -134,7 +134,7 @@ class TestOptions < Test::Unit::TestCase
     should "return database, files and cron schedule" do
       opts = Backup::Options.new(["-d", "database", "-u", "user", "-p", "pass",
                                   "-f", "file_a,file_b", 
-                                  "--cron", "15,3,*,*,*"])
+                                  "--cron", "15 3 * * *"])
       assert_equal "database", opts.database
       assert_equal 2, opts.files.size
       assert_equal "15 3 * * *", opts.cron
@@ -142,7 +142,7 @@ class TestOptions < Test::Unit::TestCase
 
     should "return cron schedule even though too many arguments" do
       opts = Backup::Options.new(["-d", "database", "-u", "user", "-p", "pass",
-                                  "--cron", "15,3,*,1,7,*,*,a"])
+                                  "--cron", "15 3 * 1 7 * * a"])
       assert_equal "15 3 * 1 7", opts.cron
     end
 
