@@ -1,9 +1,12 @@
+require_relative 'lib/backup_version'
+
 Gem::Specification.new do |s|
   s.name         = "syc-backup"
-  s.summary      = "Back up database and files or schedule cron job for backup"
-  s.description  = "Back up database and files or schedule cron job for backup"
+  s.summary      = %q{Back up a database and files}
+  s.description  = %q{Back up a database and files or schedule cron job 
+                      for backup}
   s.requirements = ['No requirements']
-  s.version      = "0.0.3"
+  s.version      = Backup::VERSION
   s.author       = "Pierre Sugar"
   s.email        = "pierre@sugaryourcoffee.de"
   s.homepage     = "http://syc.dyndns.org/drupal"
