@@ -103,6 +103,8 @@
   
     <li><a href="../Backup/CronEdit.html">Backup::CronEdit</a>
   
+    <li><a href="../Backup/Environment.html">Backup::Environment</a>
+  
     <li><a href="../Backup/FileBackup.html">Backup::FileBackup</a>
   
     <li><a href="../Backup/MySQLBackup.html">Backup::MySQLBackup</a>
@@ -114,6 +116,8 @@
     <li><a href="../Backup/Runner.html">Backup::Runner</a>
   
     <li><a href="../TestCronEdit.html">TestCronEdit</a>
+  
+    <li><a href="../TestEnvironment.html">TestEnvironment</a>
   
     <li><a href="../TestFileBackup.html">TestFileBackup</a>
   
@@ -134,7 +138,11 @@
 
   <div id="description" class="description">
     
-<p>Adds or removes a command to the user’s crontab.</p>
+<p>Adds or removes a command to the user’s crontab. To make sure that the Ruby
+application is invoked as a cron job it needs the environment variables
+that are available when run from command line. To meet these requirements
+the environment variables are read and added to the crontab. If variables
+already exist in the crontab they are overridden.</p>
 
   </div><!-- description -->
 
@@ -154,7 +162,7 @@
       
         <dt id="CRON_ENTRIES_FILE">CRON_ENTRIES_FILE
         
-        <dd class="description">
+        <dd class="description"><p>Temporary file that holds the entries to be written to the crontab</p>
         
       
       </dl>
@@ -173,7 +181,7 @@
         
         <div class="method-heading">
           <span class="method-name">add_command</span><span
-            class="method-args">(command)</span>
+            class="method-args">(command, environment=[])</span>
           <span class="method-click-advice">click to toggle source</span>
         </div>
         
@@ -182,15 +190,16 @@
           
           <p>Adds a command to the user’s crontab. If the provided command is empty <a
 href="CronEdit.html#method-i-add_command">#add_command</a> will exit the
-application with exit status -1. The method uses the _crontab -l_ and
-_crontab file_ command. If the crontab call fails the error message and
-exit status of <em>crontab</em> will be returned and the application exits</p>
+application with exit status -1. The method uses the <code>crontab
+-l</code> and <code>crontab file</code> command. If the crontab call fails
+the error message and exit status of  <code>crontab</code> will be returned
+and the application exits</p>
           
 
           
           <div class="method-source-code" id="add_command-source">
-            <pre><span class="ruby-comment"># File lib/backup/cron_edit.rb, line 15</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">add_command</span>(<span class="ruby-identifier">command</span>)
+            <pre><span class="ruby-comment"># File lib/backup/cron_edit.rb, line 20</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">add_command</span>(<span class="ruby-identifier">command</span>, <span class="ruby-identifier">environment</span>=[])
   <span class="ruby-identifier">command</span> = <span class="ruby-identifier">command</span>.<span class="ruby-identifier">strip</span>.<span class="ruby-identifier">squeeze</span>(<span class="ruby-string">&quot; &quot;</span>)
 
   <span class="ruby-keyword">if</span> <span class="ruby-identifier">command</span>.<span class="ruby-identifier">empty?</span>
@@ -202,12 +211,22 @@ exit status of <em>crontab</em> will be returned and the application exits</p>
 
   <span class="ruby-identifier">stdout</span>, <span class="ruby-identifier">stderr</span>, <span class="ruby-identifier">status</span> = <span class="ruby-constant">Open3</span>.<span class="ruby-identifier">capture3</span>(<span class="ruby-identifier">read_crontab_command</span>)
 
-  <span class="ruby-identifier">entries</span> = <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">split</span>(<span class="ruby-regexp">%r\n/</span>).<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">entry</span><span class="ruby-operator">|</span> <span class="ruby-identifier">entry</span>.<span class="ruby-identifier">strip</span>.<span class="ruby-identifier">squeeze</span>(<span class="ruby-string">&quot; &quot;</span>)}
+  <span class="ruby-identifier">entries</span> = [] <span class="ruby-operator">+</span> <span class="ruby-identifier">environment</span>
+
+  <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">split</span>(<span class="ruby-regexp">%r\n/</span>).<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">entry</span><span class="ruby-operator">|</span> 
+    <span class="ruby-identifier">entry</span> = <span class="ruby-identifier">entry</span>.<span class="ruby-identifier">strip</span>.<span class="ruby-identifier">squeeze</span>(<span class="ruby-string">&quot; &quot;</span>)
+    <span class="ruby-identifier">variable</span> = <span class="ruby-identifier">entry</span>.<span class="ruby-identifier">match</span>(<span class="ruby-regexp">%r\A\w+(?=\=)/</span>).<span class="ruby-identifier">to_s</span>
+    <span class="ruby-keyword">unless</span> <span class="ruby-identifier">variable</span>.<span class="ruby-identifier">empty?</span>
+      <span class="ruby-identifier">entries</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">entry</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">environment</span>.<span class="ruby-identifier">grep</span>(<span class="ruby-node">%r\A#{variable}/</span>)
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-identifier">entries</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">entry</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
 
   <span class="ruby-keyword">unless</span> <span class="ruby-identifier">entries</span>.<span class="ruby-identifier">include?</span> <span class="ruby-identifier">command</span>
     <span class="ruby-identifier">entries</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">command</span>
 
-    <span class="ruby-identifier">cron_entries_file</span> = <span class="ruby-constant">CRON_ENTRIES_FILE</span> <span class="ruby-comment">#'.cron_entries'</span>
+    <span class="ruby-identifier">cron_entries_file</span> = <span class="ruby-constant">CRON_ENTRIES_FILE</span> 
     <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">cron_entries_file</span>, <span class="ruby-string">'w'</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span>
       <span class="ruby-identifier">entries</span>.<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">entry</span><span class="ruby-operator">|</span> <span class="ruby-identifier">f</span>.<span class="ruby-identifier">puts</span> <span class="ruby-identifier">entry</span>}
     <span class="ruby-keyword">end</span>
@@ -250,12 +269,13 @@ exit status of <em>crontab</em> will be returned and the application exits</p>
 
         <div class="method-description">
           
-          
+          <p>Removes the <a href="CronEdit.html#CRON_ENTRIES_FILE">CRON_ENTRIES_FILE</a>
+after the values have been written to crontab</p>
           
 
           
           <div class="method-source-code" id="cleanup-source">
-            <pre><span class="ruby-comment"># File lib/backup/cron_edit.rb, line 106</span>
+            <pre><span class="ruby-comment"># File lib/backup/cron_edit.rb, line 123</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">cleanup</span>
   <span class="ruby-constant">File</span>.<span class="ruby-identifier">delete</span> <span class="ruby-constant">CRON_ENTRIES_FILE</span> <span class="ruby-keyword">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exists?</span> <span class="ruby-constant">CRON_ENTRIES_FILE</span>
 <span class="ruby-keyword">end</span></pre>
@@ -282,15 +302,15 @@ exit status of <em>crontab</em> will be returned and the application exits</p>
           
           <p>Removes a command from the user’s crontab. If the provided command is 
 empty <a href="CronEdit.html#method-i-remove_command">#remove_command</a>
-will exit the application with exit status -1. The method uses the _crontab
--l_ and _crontab file_ command. If the crontab call fails the error message
-and exit status of <em>crontab</em> will be returned and the application
-exits</p>
+will exit the application with exit status -1. The method uses the
+<code>crontab -l</code> and <code>crontab file</code> command. If the
+crontab call fails the error message and exit status of 
+<code>crontab</code> will be returned and the application exits</p>
           
 
           
           <div class="method-source-code" id="remove_command-source">
-            <pre><span class="ruby-comment"># File lib/backup/cron_edit.rb, line 60</span>
+            <pre><span class="ruby-comment"># File lib/backup/cron_edit.rb, line 75</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">remove_command</span>(<span class="ruby-identifier">command</span>)
   <span class="ruby-identifier">command</span> = <span class="ruby-identifier">command</span>.<span class="ruby-identifier">strip</span>.<span class="ruby-identifier">squeeze</span>(<span class="ruby-string">&quot; &quot;</span>)
 

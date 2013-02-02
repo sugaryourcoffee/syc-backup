@@ -101,6 +101,8 @@
   
     <li><a href="./Backup/CronEdit.html">Backup::CronEdit</a>
   
+    <li><a href="./Backup/Environment.html">Backup::Environment</a>
+  
     <li><a href="./Backup/FileBackup.html">Backup::FileBackup</a>
   
     <li><a href="./Backup/MySQLBackup.html">Backup::MySQLBackup</a>
@@ -112,6 +114,8 @@
     <li><a href="./Backup/Runner.html">Backup::Runner</a>
   
     <li><a href="./TestCronEdit.html">TestCronEdit</a>
+  
+    <li><a href="./TestEnvironment.html">TestEnvironment</a>
   
     <li><a href="./TestFileBackup.html">TestFileBackup</a>
   
@@ -165,12 +169,12 @@
 
         <div class="method-description">
           
-          
+          <p>Create files to be backed up</p>
           
 
           
           <div class="method-source-code" id="setup-source">
-            <pre><span class="ruby-comment"># File test/test_file_backup.rb, line 42</span>
+            <pre><span class="ruby-comment"># File test/test_file_backup.rb, line 43</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">setup</span>
   [<span class="ruby-string">&quot;file1&quot;</span>, <span class="ruby-string">&quot;file2&quot;</span>, <span class="ruby-string">&quot;file3&quot;</span>].<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span> <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">touch</span> <span class="ruby-identifier">f</span>}
 <span class="ruby-keyword">end</span></pre>
@@ -195,12 +199,13 @@
 
         <div class="method-description">
           
-          
+          <p>Remove files previously created with setup and all created files and
+directories during processing backups</p>
           
 
           
           <div class="method-source-code" id="teardown-source">
-            <pre><span class="ruby-comment"># File test/test_file_backup.rb, line 46</span>
+            <pre><span class="ruby-comment"># File test/test_file_backup.rb, line 49</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">teardown</span>
   [<span class="ruby-string">&quot;file1&quot;</span>, <span class="ruby-string">&quot;file2&quot;</span>, <span class="ruby-string">&quot;file3&quot;</span>].<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span> <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">rm</span> <span class="ruby-identifier">f</span>}
   <span class="ruby-constant">Dir</span>[<span class="ruby-string">&quot;test/backup/file*&quot;</span>].<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span> <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">rm</span> <span class="ruby-identifier">f</span>}

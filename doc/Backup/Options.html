@@ -99,6 +99,8 @@
   
     <li><a href="../Backup/CronEdit.html">Backup::CronEdit</a>
   
+    <li><a href="../Backup/Environment.html">Backup::Environment</a>
+  
     <li><a href="../Backup/FileBackup.html">Backup::FileBackup</a>
   
     <li><a href="../Backup/MySQLBackup.html">Backup::MySQLBackup</a>
@@ -110,6 +112,8 @@
     <li><a href="../Backup/Runner.html">Backup::Runner</a>
   
     <li><a href="../TestCronEdit.html">TestCronEdit</a>
+  
+    <li><a href="../TestEnvironment.html">TestEnvironment</a>
   
     <li><a href="../TestFileBackup.html">TestFileBackup</a>
   
@@ -166,12 +170,12 @@
       <div id="attribute-i-backup_folder" class="method-detail">
         <div class="method-heading attribute-method-heading">
           <span class="method-name">backup_folder</span><span
-            class="attribute-access-type">[RW]</span>
+            class="attribute-access-type">[R]</span>
         </div>
 
         <div class="method-description">
         
-        
+        <p>The backup directory where the files to be backed up</p>
         
         </div>
       </div>
@@ -179,12 +183,12 @@
       <div id="attribute-i-cron" class="method-detail">
         <div class="method-heading attribute-method-heading">
           <span class="method-name">cron</span><span
-            class="attribute-access-type">[RW]</span>
+            class="attribute-access-type">[R]</span>
         </div>
 
         <div class="method-description">
         
-        
+        <p>The cron schedule</p>
         
         </div>
       </div>
@@ -192,12 +196,12 @@
       <div id="attribute-i-database" class="method-detail">
         <div class="method-heading attribute-method-heading">
           <span class="method-name">database</span><span
-            class="attribute-access-type">[RW]</span>
+            class="attribute-access-type">[R]</span>
         </div>
 
         <div class="method-description">
         
-        
+        <p>Retrieve the database name that has to be backed up</p>
         
         </div>
       </div>
@@ -205,12 +209,12 @@
       <div id="attribute-i-files" class="method-detail">
         <div class="method-heading attribute-method-heading">
           <span class="method-name">files</span><span
-            class="attribute-access-type">[RW]</span>
+            class="attribute-access-type">[R]</span>
         </div>
 
         <div class="method-description">
         
-        
+        <p>The files to be backed up</p>
         
         </div>
       </div>
@@ -218,12 +222,13 @@
       <div id="attribute-i-no_compress" class="method-detail">
         <div class="method-heading attribute-method-heading">
           <span class="method-name">no_compress</span><span
-            class="attribute-access-type">[RW]</span>
+            class="attribute-access-type">[R]</span>
         </div>
 
         <div class="method-description">
         
-        
+        <p>Determines whether to compress the backup if not to compress it returns
+false, otherwise true</p>
         
         </div>
       </div>
@@ -231,12 +236,12 @@
       <div id="attribute-i-override" class="method-detail">
         <div class="method-heading attribute-method-heading">
           <span class="method-name">override</span><span
-            class="attribute-access-type">[RW]</span>
+            class="attribute-access-type">[R]</span>
         </div>
 
         <div class="method-description">
         
-        
+        <p>Determines whether the backup folder to be overridden when already exists</p>
         
         </div>
       </div>
@@ -244,12 +249,12 @@
       <div id="attribute-i-password" class="method-detail">
         <div class="method-heading attribute-method-heading">
           <span class="method-name">password</span><span
-            class="attribute-access-type">[RW]</span>
+            class="attribute-access-type">[R]</span>
         </div>
 
         <div class="method-description">
         
-        
+        <p>The user’s password to access the database</p>
         
         </div>
       </div>
@@ -257,12 +262,12 @@
       <div id="attribute-i-user" class="method-detail">
         <div class="method-heading attribute-method-heading">
           <span class="method-name">user</span><span
-            class="attribute-access-type">[RW]</span>
+            class="attribute-access-type">[R]</span>
         </div>
 
         <div class="method-description">
         
-        
+        <p>The user that is allowed to access the database</p>
         
         </div>
       </div>
@@ -292,7 +297,7 @@
 
           
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/backup/options.rb, line 13</span>
+            <pre><span class="ruby-comment"># File lib/backup/options.rb, line 30</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">argv</span>)
   <span class="ruby-ivar">@exit_code</span> = <span class="ruby-value">0</span>
   <span class="ruby-identifier">init_exit_messages</span>

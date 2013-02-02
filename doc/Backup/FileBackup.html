@@ -105,6 +105,8 @@
   
     <li><a href="../Backup/CronEdit.html">Backup::CronEdit</a>
   
+    <li><a href="../Backup/Environment.html">Backup::Environment</a>
+  
     <li><a href="../Backup/FileBackup.html">Backup::FileBackup</a>
   
     <li><a href="../Backup/MySQLBackup.html">Backup::MySQLBackup</a>
@@ -116,6 +118,8 @@
     <li><a href="../Backup/Runner.html">Backup::Runner</a>
   
     <li><a href="../TestCronEdit.html">TestCronEdit</a>
+  
+    <li><a href="../TestEnvironment.html">TestEnvironment</a>
   
     <li><a href="../TestFileBackup.html">TestFileBackup</a>
   
@@ -136,6 +140,9 @@
 
   <div id="description" class="description">
     
+<p><a href="../Backup.html">Backup</a> directories and files to a backup
+directory</p>
+
   </div><!-- description -->
 
   
@@ -167,12 +174,13 @@
 
         <div class="method-description">
           
-          
+          <p>Initializes the files to be backed up. If no file is provided an error is
+returned</p>
           
 
           
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/backup/file_backup.rb, line 8</span>
+            <pre><span class="ruby-comment"># File lib/backup/file_backup.rb, line 16</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">files</span>=[])
   <span class="ruby-ivar">@files</span> = <span class="ruby-identifier">files</span>
 <span class="ruby-keyword">end</span></pre>
@@ -203,12 +211,14 @@
 
         <div class="method-description">
           
-          
+          <p>The files to be backed up are initilized when creating an instance of <a
+href="FileBackup.html">FileBackup</a>. These files are then backed up to
+the backup directory</p>
           
 
           
           <div class="method-source-code" id="backup-source">
-            <pre><span class="ruby-comment"># File lib/backup/file_backup.rb, line 40</span>
+            <pre><span class="ruby-comment"># File lib/backup/file_backup.rb, line 51</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">backup</span>(<span class="ruby-identifier">backup_folder</span>)
 
   <span class="ruby-identifier">inexistent_files</span> = []
@@ -259,12 +269,13 @@
 
         <div class="method-description">
           
-          
+          <p>Checks if the files all exist. Files that do not exist are returned in an
+Array</p>
           
 
           
           <div class="method-source-code" id="check_for_inexistent-source">
-            <pre><span class="ruby-comment"># File lib/backup/file_backup.rb, line 70</span>
+            <pre><span class="ruby-comment"># File lib/backup/file_backup.rb, line 83</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">check_for_inexistent</span> (<span class="ruby-identifier">files</span>)
   <span class="ruby-identifier">inexistent_files</span> = []
   <span class="ruby-identifier">files</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span>
@@ -294,12 +305,12 @@
 
         <div class="method-description">
           
-          
+          <p>Compress the files to the backup directory</p>
           
 
           
           <div class="method-source-code" id="compress-source">
-            <pre><span class="ruby-comment"># File lib/backup/file_backup.rb, line 12</span>
+            <pre><span class="ruby-comment"># File lib/backup/file_backup.rb, line 21</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">compress</span>(<span class="ruby-identifier">files</span>, <span class="ruby-identifier">backup_folder</span>)
   <span class="ruby-identifier">inexistent_files</span> = <span class="ruby-identifier">check_for_inexistent</span> <span class="ruby-identifier">files</span>
   <span class="ruby-keyword">unless</span> <span class="ruby-identifier">inexistent_files</span>.<span class="ruby-identifier">empty?</span>

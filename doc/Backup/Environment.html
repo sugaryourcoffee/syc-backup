@@ -4,7 +4,7 @@
 <head>
 <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 
-<title>class Backup::Process - RDoc Documentation</title>
+<title>class Backup::Environment - RDoc Documentation</title>
 
 <link type="text/css" media="screen" href="../rdoc.css" rel="stylesheet">
 
@@ -47,7 +47,7 @@
     <nav id="file-list-section" class="section">
   <h3 class="section-header">Defined In</h3>
   <ul>
-    <li>lib/backup/process.rb
+    <li>lib/backup/environment.rb
   </ul>
 </nav>
 
@@ -70,9 +70,7 @@
 
   <ul class="link-list">
     
-    <li><a href="#method-c-new">::new</a>
-    
-    <li><a href="#method-i-backup">#backup</a>
+    <li><a href="#method-c-ruby">::ruby</a>
     
   </ul>
 </nav>
@@ -132,11 +130,12 @@
 </nav>
 
 <div id="documentation">
-  <h1 class="class">class Backup::Process</h1>
+  <h1 class="class">class Backup::Environment</h1>
 
   <div id="description" class="description">
     
-<p>Conducts the backups of a MySQL database and files.</p>
+<p>Reads and filters the user’s environment variables to meet Ruby and Gem
+requirements to run the application as a cron job</p>
 
   </div><!-- description -->
 
@@ -149,6 +148,20 @@
     
 
     
+    <!-- Constants -->
+    <section id="constants-list" class="section">
+      <h3 class="section-header">Constants</h3>
+      <dl>
+      
+        <dt id="VARIABLES">VARIABLES
+        
+        <dd class="description"><p>Contains the environment variable names that are required to run a Ruby
+application from as a cron job</p>
+        
+      
+      </dl>
+    </section>
+    
 
     
 
@@ -158,52 +171,10 @@
       <h3 class="section-header">Public Class Methods</h3>
 
     
-      <div id="method-c-new" class="method-detail ">
+      <div id="method-c-ruby" class="method-detail ">
         
         <div class="method-heading">
-          <span class="method-name">new</span><span
-            class="method-args">(backup_folder, files, override, no_compress)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-        
-
-        <div class="method-description">
-          
-          <p>Takes the backup_folder where the files are backed up to. If override is
-provided the files in the backup folder are overridden. no_compress will
-prevent compressing the backed up files and will just copy them to the
-provided backup folder</p>
-          
-
-          
-          <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/backup/process.rb, line 17</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">backup_folder</span>, <span class="ruby-identifier">files</span>, <span class="ruby-identifier">override</span>, <span class="ruby-identifier">no_compress</span>)
-  <span class="ruby-ivar">@backup_folder</span> = <span class="ruby-identifier">backup_folder</span>
-  <span class="ruby-ivar">@files</span> = <span class="ruby-identifier">files</span>
-  <span class="ruby-ivar">@override</span> = <span class="ruby-identifier">override</span>
-  <span class="ruby-ivar">@no_compress</span> = <span class="ruby-identifier">no_compress</span>
-<span class="ruby-keyword">end</span></pre>
-          </div><!-- new-source -->
-          
-        </div>
-
-        
-
-        
-      </div><!-- new-method -->
-
-    
-    </section><!-- public-class-method-details -->
-  
-     <section id="public-instance-5Buntitled-5D-method-details" class="method-section section">
-      <h3 class="section-header">Public Instance Methods</h3>
-
-    
-      <div id="method-i-backup" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">backup</span><span
+          <span class="method-name">ruby</span><span
             class="method-args">()</span>
           <span class="method-click-advice">click to toggle source</span>
         </div>
@@ -211,42 +182,41 @@ provided backup folder</p>
 
         <div class="method-description">
           
-          <p>Creates the backup of the database and the files. If at least one of the
-provided files doesn’t exist the application will print an error message
-with the inexistent files and terminates</p>
+          <p>Retrieves the environment variables that are required running a Ruby
+application as a cron job. The variable are returned in an Array</p>
           
 
           
-          <div class="method-source-code" id="backup-source">
-            <pre><span class="ruby-comment"># File lib/backup/process.rb, line 27</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">backup</span>
-  <span class="ruby-identifier">inexistent_files</span> = <span class="ruby-identifier">check_for_inexistent_files</span>
-  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">inexistent_files</span>.<span class="ruby-identifier">empty?</span>
-    <span class="ruby-constant">STDERR</span>.<span class="ruby-identifier">puts</span> <span class="ruby-string">&quot;Cannot backup inexistent files&quot;</span>
-    <span class="ruby-constant">STDERR</span>.<span class="ruby-identifier">puts</span> <span class="ruby-identifier">inexistent_files</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&quot; &quot;</span>)
-    <span class="ruby-identifier">exit</span> <span class="ruby-value">1</span>
+          <div class="method-source-code" id="ruby-source">
+            <pre><span class="ruby-comment"># File lib/backup/environment.rb, line 25</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">ruby</span>
+  <span class="ruby-identifier">file</span> = <span class="ruby-string">&quot;.current_environment.tmp&quot;</span>
+  <span class="ruby-identifier">system</span> (<span class="ruby-node">&quot;env &gt; #{file}&quot;</span>)
+
+  <span class="ruby-identifier">lines</span> = []
+
+  <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">file</span>, <span class="ruby-string">'r'</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span>
+    <span class="ruby-keyword">while</span> <span class="ruby-identifier">line</span> = <span class="ruby-identifier">f</span>.<span class="ruby-identifier">gets</span>
+      <span class="ruby-identifier">variable</span> = <span class="ruby-identifier">line</span>.<span class="ruby-identifier">chomp</span>.<span class="ruby-identifier">match</span>(<span class="ruby-regexp">%r\A\w+(?=\=)/</span>).<span class="ruby-identifier">to_s</span>
+      <span class="ruby-identifier">lines</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">line</span>.<span class="ruby-identifier">chomp</span> <span class="ruby-keyword">if</span> <span class="ruby-constant">VARIABLES</span>.<span class="ruby-identifier">find_index</span> <span class="ruby-identifier">variable</span>.<span class="ruby-identifier">upcase</span>
+    <span class="ruby-keyword">end</span>
   <span class="ruby-keyword">end</span>
 
-  <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">mkdir_p</span> <span class="ruby-ivar">@backup_folder</span> <span class="ruby-keyword">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exists?</span> <span class="ruby-ivar">@backup_folder</span>
+  <span class="ruby-constant">File</span>.<span class="ruby-identifier">delete</span> <span class="ruby-identifier">file</span>
 
-  <span class="ruby-keyword">if</span> <span class="ruby-ivar">@no_compress</span> 
-    <span class="ruby-identifier">copy_files</span> 
-  <span class="ruby-keyword">else</span>
-    <span class="ruby-identifier">compress_files_and_copy</span>
-  <span class="ruby-keyword">end</span>
-
+  <span class="ruby-identifier">lines</span>
 <span class="ruby-keyword">end</span></pre>
-          </div><!-- backup-source -->
+          </div><!-- ruby-source -->
           
         </div>
 
         
 
         
-      </div><!-- backup-method -->
+      </div><!-- ruby-method -->
 
     
-    </section><!-- public-instance-method-details -->
+    </section><!-- public-class-method-details -->
   
   </section><!-- 5Buntitled-5D -->
 

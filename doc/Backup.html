@@ -47,11 +47,13 @@
     <nav id="file-list-section" class="section">
   <h3 class="section-header">Defined In</h3>
   <ul>
+    <li>lib/backup_version.rb
     <li>lib/backup/file_backup.rb
     <li>lib/backup/process.rb
     <li>lib/backup/mysql_backup.rb
     <li>lib/backup/options.rb
     <li>lib/backup/cron_edit.rb
+    <li>lib/backup/environment.rb
     <li>lib/backup/runner.rb
   </ul>
 </nav>
@@ -88,6 +90,8 @@
   
     <li><a href="./Backup/CronEdit.html">Backup::CronEdit</a>
   
+    <li><a href="./Backup/Environment.html">Backup::Environment</a>
+  
     <li><a href="./Backup/FileBackup.html">Backup::FileBackup</a>
   
     <li><a href="./Backup/MySQLBackup.html">Backup::MySQLBackup</a>
@@ -99,6 +103,8 @@
     <li><a href="./Backup/Runner.html">Backup::Runner</a>
   
     <li><a href="./TestCronEdit.html">TestCronEdit</a>
+  
+    <li><a href="./TestEnvironment.html">TestEnvironment</a>
   
     <li><a href="./TestFileBackup.html">TestFileBackup</a>
   
@@ -119,6 +125,20 @@
 
   <div id="description" class="description">
     
+<p><a href="Backup.html">Backup</a> contains functions to backup a MySQL
+database and files and directories to a default or specified backup
+directory. Instead of instant backup the invoked command can be added to a
+crontab and invoked based on the provided schedule that is a parameter of
+the --cron option. The backed up files are per default compressed but this
+can be ommitted</p>
+
+<p><a href="Backup.html">Backup</a> contains functions to backup a MySQL
+database and files and directories to a default or specified backup
+directory. Instead of instant backup the invoked command can be added to a
+crontab and invoked based on the provided schedule that is a parameter of
+the --cron option. The backed up files are per default compressed but this
+can be ommitted</p>
+
 <p>The module <a href="Backup.html">Backup</a> provides functions to backup
 MySQL databases and files and folders. The backup will be compressed to a
 default or a specified backup folder. Rather than backing up the files a
@@ -134,6 +154,19 @@ cron job can be scheduled  invoking the provided command.</p>
 
     
 
+    
+    <!-- Constants -->
+    <section id="constants-list" class="section">
+      <h3 class="section-header">Constants</h3>
+      <dl>
+      
+        <dt id="VERSION">VERSION
+        
+        <dd class="description"><p>Version of the application</p>
+        
+      
+      </dl>
+    </section>
     
 
     

@@ -101,6 +101,8 @@
   
     <li><a href="../Backup/CronEdit.html">Backup::CronEdit</a>
   
+    <li><a href="../Backup/Environment.html">Backup::Environment</a>
+  
     <li><a href="../Backup/FileBackup.html">Backup::FileBackup</a>
   
     <li><a href="../Backup/MySQLBackup.html">Backup::MySQLBackup</a>
@@ -112,6 +114,8 @@
     <li><a href="../Backup/Runner.html">Backup::Runner</a>
   
     <li><a href="../TestCronEdit.html">TestCronEdit</a>
+  
+    <li><a href="../TestEnvironment.html">TestEnvironment</a>
   
     <li><a href="../TestFileBackup.html">TestFileBackup</a>
   
@@ -171,7 +175,7 @@ optons as provided by the user on the command line</p>
 
           
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/backup/runner.rb, line 13</span>
+            <pre><span class="ruby-comment"># File lib/backup/runner.rb, line 14</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">argv</span>)
   <span class="ruby-ivar">@options</span> = <span class="ruby-constant">Options</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">argv</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -207,7 +211,7 @@ optons as provided by the user on the command line</p>
 
           
           <div class="method-source-code" id="run-source">
-            <pre><span class="ruby-comment"># File lib/backup/runner.rb, line 18</span>
+            <pre><span class="ruby-comment"># File lib/backup/runner.rb, line 19</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">run</span>
   <span class="ruby-keyword">if</span> <span class="ruby-ivar">@options</span>.<span class="ruby-identifier">cron</span>
     <span class="ruby-identifier">create_cron</span>
