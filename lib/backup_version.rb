@@ -5,5 +5,5 @@
 # per default compressed but this can be ommitted
 module Backup
   # Version of the application
-  VERSION = '0.0.4'
+  VERSION = '0.0.5'
 end
