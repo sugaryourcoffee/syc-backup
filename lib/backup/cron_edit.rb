@@ -12,6 +12,11 @@ module Backup
     # Temporary file that holds the entries to be written to the crontab
     CRON_ENTRIES_FILE = ".cron_entries"
 
+    # Pre comment before the entered command
+    PRE_COMMENT = "#----command added by sycbackup---"
+    # Post comment after the entered command
+    POST_COMMENT = "#---------------------------------"
+
     # Adds a command to the user's crontab. If the provided command is empty
     # add_command will exit the application with exit status -1.
     # The method uses the <tt>crontab -l</tt> and <tt>crontab file</tt> command.
@@ -42,7 +47,9 @@ module Backup
       end
 
       unless entries.include? command
+        entries << PRE_COMMENT
         entries << command
+        entries << POST_COMMENT
 
         cron_entries_file = CRON_ENTRIES_FILE 
         File.open(cron_entries_file, 'w') do |f|
@@ -93,9 +100,11 @@ module Backup
 
       entries = stdout.split(/\n/).each {|entry| entry.strip.squeeze(" ")}
 
+      entries.delete(PRE_COMMENT)
       entries.delete(command)
+      entries.delete(POST_COMMENT)
 
-      cron_entries_file = CRON_ENTRIES_FILE #".cron_entries"
+      cron_entries_file = CRON_ENTRIES_FILE
 
       File.open(cron_entries_file, 'w') do |file|
         entries.each {|entry| file.puts entry}
