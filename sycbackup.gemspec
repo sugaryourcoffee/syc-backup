@@ -1,4 +1,5 @@
-require_relative 'lib/backup_version'
+$LOAD_PATH.push File.expand_path("../lib", __FILE__)
+require 'backup_version'
 
 Gem::Specification.new do |s|
   s.name         = "syc-backup"
