@@ -2,6 +2,7 @@ require_relative 'options'
 require_relative 'mysql_backup'
 require_relative 'cron_edit'
 require_relative 'process'
+require_relative 'environment'
 
 module Backup
 
@@ -29,14 +30,14 @@ module Backup
     # provided with the --cron flag
     def create_cron
       cron_edit = CronEdit.new
-      command = cron_edit.add_command create_cron_command
+      command = cron_edit.add_command create_cron_command, Environment.ruby
       puts "--> added command to cron"
       puts "    #{command}"
     end
 
     # Creates the cron command based on the options provided by the user.
     def create_cron_command
-      command = @options.cron + " syckup #{@options.backup_folder}"
+      command = @options.cron + " sycbackup #{@options.backup_folder}"
       command += ' -d ' + @options.database + 
                  ' -u'  + @options.user + 
                  ' -p'  + @options.password if @options.database

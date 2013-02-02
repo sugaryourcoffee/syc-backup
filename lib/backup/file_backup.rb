@@ -1,14 +1,23 @@
 require 'fileutils'
 require 'open3'
 
+# Backup contains functions to backup a MySQL database and files and directories
+# to a default or specified backup directory. Instead of instant backup the
+# invoked command can be added to a crontab and invoked based on the provided
+# schedule that is a parameter of the --cron option. The backed up files are
+# per default compressed but this can be ommitted
 module Backup
 
+  # Backup directories and files to a backup directory
   class FileBackup
 
+    # Initializes the files to be backed up. If no file is provided an error
+    # is returned
     def initialize(files=[])
       @files = files
     end
 
+    # Compress the files to the backup directory
     def compress(files, backup_folder)
       inexistent_files = check_for_inexistent files
       unless inexistent_files.empty?
@@ -37,6 +46,8 @@ module Backup
 
     end
 
+    # The files to be backed up are initilized when creating an instance of
+    # FileBackup. These files are then backed up to the backup directory
     def backup(backup_folder)
 
       inexistent_files = []
@@ -67,6 +78,8 @@ module Backup
 
     end
 
+    # Checks if the files all exist. Files that do not exist are returned in
+    # an Array
     def check_for_inexistent (files)
       inexistent_files = []
       files.each do |f|

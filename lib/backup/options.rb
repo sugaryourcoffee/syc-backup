@@ -1,4 +1,5 @@
 require 'optparse'
+require_relative '../backup_version'
 
 module Backup
 
@@ -6,8 +7,24 @@ module Backup
   class Options
     # If the user doesn't provide a backup folder a default folder is used
     DEFAULT_BACKUP_FOLDER = File.expand_path("~/backup/")
-    attr_accessor :database, :user, :password, :files, 
-                  :backup_folder, :override, :cron, :no_compress
+    
+    # Retrieve the database name that has to be backed up
+    attr_reader :database
+    # The user that is allowed to access the database
+    attr_reader :user
+    # The user's password to access the database
+    attr_reader :password
+    # The files to be backed up
+    attr_reader :files
+    # The backup directory where the files to be backed up 
+    attr_reader :backup_folder
+    # Determines whether the backup folder to be overridden when already exists 
+    attr_reader :override
+    # The cron schedule
+    attr_reader :cron
+    # Determines whether to compress the backup if not to compress it returns
+    # false, otherwise true
+    attr_reader :no_compress
 
     # Takes the arguments from the command line and parses them
     def initialize(argv)
@@ -40,9 +57,11 @@ module Backup
     def validate_cron_values(c)
       cron_values = [0..59, 0..23, 1..31, 1..12, 1..7]
       c.each.with_index do |v,i|
-        unless cron_values[i].cover?(v.to_i) or v == '*'
-          @exit_code |= 0b1000 
-          return nil
+        v.split(/,/).each do |s|
+          unless cron_values[i].cover?(s.to_i) or s == '*'
+            @exit_code |= 0b1000 
+            return nil
+          end
         end
       end
       c.fill('*', c.size..4)
@@ -81,6 +100,7 @@ module Backup
     # Initializes values as the backup folder with a default value if not
     # provided by the user
     def initialize_default_arguments_if_missing
+      @backup_folder = DEFAULT_BACKUP_FOLDER unless @backup_folder
       unless @override
         timestamp = Time.now.strftime("%Y%m%d-%H%M%S")
         if @backup_folder and File.exists?(@backup_folder)
@@ -88,7 +108,6 @@ module Backup
                            File.basename(@backup_folder) + '_' + timestamp
         end
       end
-      @backup_folder = DEFAULT_BACKUP_FOLDER unless @backup_folder
       @backup_folder = File.expand_path(@backup_folder)
       @backup_folder += '/' unless @backup_folder.match(/.*\/\Z/)
     end
@@ -102,18 +121,15 @@ module Backup
                       "Usage: #{app_name} [options] [backup_folder]"
 
         opts.on("-d", "--database DATABASE", "Database to backup") do |d|
-          #puts "database = #{d}"
           @database = d
         end
 
         opts.on("-u", "--user USER", "User of the database") do |u|
-          #puts "user = #{u}"
           @user = u
         end
         
         opts.on("-p", "--password PASSWORD", 
                 "User's password to access the database") do |p|
-          #puts "password = #{p}"
           @password = p
         end
 
@@ -132,20 +148,20 @@ module Backup
           @override = true
         end
 
-        opts.on("--cron min,hou,dom,mon,dow", Array,
+        opts.on("--cron 'm h dom m dow'", String,
                 "Create a cron job that automatically ",
                 "invokes #{app_name}",
-                "min = minute        0..59",
-                "hou = hour          0..23",
+                "m   = minute        0..59",
+                "h   = hour          0..23",
                 "dom = day of month  1..31",
-                "mon = month         1..12",
+                "m   = month         1..12",
                 "dow = day of week   1..7",
-                "30,3,*,*,* will run the cron job at 3:30pm") do |c|
-          @cron = validate_cron_values c.slice(0..4)
+                "30 3 * * * will run the cron job at 3:30am") do |c|
+          @cron = validate_cron_values c.split(/ /).slice(0..4)
         end
 
         opts.on("-v", "--version", "Show version") do |v|
-          puts OptionParser::Version.join('.')
+          puts Backup::VERSION
           exit 0
         end
 

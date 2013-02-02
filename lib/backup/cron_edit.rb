@@ -2,17 +2,22 @@ require 'open3'
 
 module Backup
 
-  # Adds or removes a command to the user's crontab.
+  # Adds or removes a command to the user's crontab. To make sure that the
+  # Ruby application is invoked as a cron job it needs the environment
+  # variables that are available when run from command line. To meet these
+  # requirements the environment variables are read and added to the crontab. If
+  # variables already exist in the crontab they are overridden.
   class CronEdit
 
+    # Temporary file that holds the entries to be written to the crontab
     CRON_ENTRIES_FILE = ".cron_entries"
 
     # Adds a command to the user's crontab. If the provided command is empty
     # add_command will exit the application with exit status -1.
-    # The method uses the _crontab -l_ and _crontab file_ command. If the
-    # crontab call fails the error message and exit status of _crontab_ will
-    # be returned and the application exits
-    def add_command(command)
+    # The method uses the <tt>crontab -l</tt> and <tt>crontab file</tt> command.
+    # If the crontab call fails the error message and exit status of 
+    # <tt>crontab</tt> will be returned and the application exits
+    def add_command(command, environment=[])
       command = command.strip.squeeze(" ")
 
       if command.empty?
@@ -24,12 +29,22 @@ module Backup
 
       stdout, stderr, status = Open3.capture3(read_crontab_command)
 
-      entries = stdout.split(/\n/).each {|entry| entry.strip.squeeze(" ")}
+      entries = [] + environment
+
+      stdout.split(/\n/).each do |entry| 
+        entry = entry.strip.squeeze(" ")
+        variable = entry.match(/\A\w+(?=\=)/).to_s
+        unless variable.empty?
+          entries << entry unless environment.grep(/\A#{variable}/)
+        else
+          entries << entry
+        end
+      end
 
       unless entries.include? command
         entries << command
 
-        cron_entries_file = CRON_ENTRIES_FILE #'.cron_entries'
+        cron_entries_file = CRON_ENTRIES_FILE 
         File.open(cron_entries_file, 'w') do |f|
           entries.each {|entry| f.puts entry}
         end
@@ -54,9 +69,9 @@ module Backup
 
     # Removes a command from the user's crontab. If the provided command is 
     # empty remove_command will exit the application with exit status -1.
-    # The method uses the _crontab -l_ and _crontab file_ command. If the
-    # crontab call fails the error message and exit status of _crontab_ will
-    # be returned and the application exits
+    # The method uses the <tt>crontab -l</tt> and <tt>crontab file</tt> command.
+    # If the crontab call fails the error message and exit status of 
+    # <tt>crontab</tt> will be returned and the application exits
     def remove_command(command)
       command = command.strip.squeeze(" ")
 
@@ -103,6 +118,8 @@ module Backup
 
     end
 
+    # Removes the CRON_ENTRIES_FILE after the values have been written to
+    # crontab
     def cleanup
       File.delete CRON_ENTRIES_FILE if File.exists? CRON_ENTRIES_FILE
     end
