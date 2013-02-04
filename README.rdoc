@@ -7,22 +7,35 @@ The application can be installed with
 
 == Usage
 Backup a database to the default folder _~/backup_
-    $ sycup -d database -uuser -ppass
+    $ sycbackup -d database -uuser -ppass
 
 Backup a MySQL database, a directory and files to the default folder
-    $ sycup -d database -uuser -ppass -f directory,file1,file2
+    $ sycbackup -d database -uuser -ppass -f directory,file1,file2
 
 Specify a backup folder
-    $ sycup backup/folder -d database -uuser -ppass -f directory,file1,file2
+    $ sycbackup backup/folder -d database -uuser -ppass -f directory,file1,file2
 
 Override files in the backup folder if they exist
-    $ sycup backup/folder --override -f directory,file1,file2
+    $ sycbackup backup/folder --override -f directory,file1,file2
 
 Don't compress the backup
-    $ sycup --no-compress -f directory,file1,file2
+    $ sycbackup --no-compress -f directory,file1,file2
 
 Create a cron job that is scheduled every day at 2:30
-    $ sycup -d database -uuser -ppass -f directory,file1 --cron 30,2,*,*,*
+    $ sycbackup -d database -uuser -ppass -f directory,file1 --cron 30,2,*,*,*
+
+If the user or password contains characters as '(' you have to escape
+them. A password like 123(56 has to be provided with pass\"123\\\\(56\".
+
+== Usage of --override and --no-compress
+Whether the backup directory and the backup files are time stamped depends how
+--override and --no-compress is set. The results are shown in the table below.
+
+    --override      --no-compress     backup directory      backup file(s)
+         0                0            w/o timestamp         w/ timestamp
+         1                0            w/o timestamp         w/ timestamp
+         0                1            w/  timestamp         uncompressed
+         1                1            w/o timestamp         uncompressed
 
 == Supported Platform
 syc-backup has been tested with 1.9.3
@@ -40,6 +53,9 @@ The source contains lib/backup/file_backup.rb which is not used in the applicati
 The tests create folders and files and will be deleted after the tests finish. _MySQLBackup_ needs to run a MySQL database with a database _test_ and a user _user_ with the password _pass_.
 
 The test files live in the test folder and begin with test_.
+
+There is a rake file available which can be used to run all tests with
+    $ rake test
 
 == Links
 * [http://sugaryourcoffee.github.com/syc-backup] - RubyDoc
