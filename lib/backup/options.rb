@@ -101,12 +101,10 @@ module Backup
     # provided by the user
     def initialize_default_arguments_if_missing
       @backup_folder = DEFAULT_BACKUP_FOLDER unless @backup_folder
-      unless @override
+      if @override and @no_compress
         timestamp = Time.now.strftime("%Y%m%d-%H%M%S")
-        if @backup_folder and File.exists?(@backup_folder)
-          @backup_folder = File.dirname(@backup_folder) + '/' +
-                           File.basename(@backup_folder) + '_' + timestamp
-        end
+        @backup_folder = File.dirname(@backup_folder) + '/' +
+                         File.basename(@backup_folder) + '_' + timestamp
       end
       @backup_folder = File.expand_path(@backup_folder)
       @backup_folder += '/' unless @backup_folder.match(/.*\/\Z/)
