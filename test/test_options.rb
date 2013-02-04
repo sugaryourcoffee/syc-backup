@@ -102,18 +102,11 @@ class TestOptions < Test::Unit::TestCase
   context "Correct user input" do
 
     should "return database, user, password and default backup_folder" do
-      default_backup_folder_exists = 
-        File.exists? Backup::Options::DEFAULT_BACKUP_FOLDER
       opts = Backup::Options.new(["-d", "database", "-u", "user", "-p", "pass"])
       assert_equal "database", opts.database
       assert_equal "user", opts.user
       assert_equal "pass", opts.password
-      unless default_backup_folder_exists
-        assert_match Backup::Options::DEFAULT_BACKUP_FOLDER, opts.backup_folder
-      else
-        assert_match /#{Backup::Options::DEFAULT_BACKUP_FOLDER}_\d{8}-\d{6}\//, 
-                     opts.backup_folder
-      end
+      assert_match Backup::Options::DEFAULT_BACKUP_FOLDER, opts.backup_folder
     end
 
     should "return database and specified backup folder" do
@@ -184,6 +177,11 @@ class TestOptions < Test::Unit::TestCase
       assert_equal true, opts.no_compress
     end
 
+    should "return time stamped backup directory" do
+      opts = Backup::Options.new(["-f", "a,b,c", "--no-compress", "--override"])
+      assert_match /#{Backup::Options::DEFAULT_BACKUP_FOLDER}_\d{8}-\d{6}\//, 
+                   opts.backup_folder
+    end
   end
 
 end
