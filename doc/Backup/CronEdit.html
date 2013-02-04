@@ -165,6 +165,16 @@ already exist in the crontab they are overridden.</p>
         <dd class="description"><p>Temporary file that holds the entries to be written to the crontab</p>
         
       
+        <dt id="POST_COMMENT">POST_COMMENT
+        
+        <dd class="description"><p>Post comment after the entered command</p>
+        
+      
+        <dt id="PRE_COMMENT">PRE_COMMENT
+        
+        <dd class="description"><p>Pre comment before the entered command</p>
+        
+      
       </dl>
     </section>
     
@@ -198,7 +208,7 @@ and the application exits</p>
 
           
           <div class="method-source-code" id="add_command-source">
-            <pre><span class="ruby-comment"># File lib/backup/cron_edit.rb, line 20</span>
+            <pre><span class="ruby-comment"># File lib/backup/cron_edit.rb, line 25</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">add_command</span>(<span class="ruby-identifier">command</span>, <span class="ruby-identifier">environment</span>=[])
   <span class="ruby-identifier">command</span> = <span class="ruby-identifier">command</span>.<span class="ruby-identifier">strip</span>.<span class="ruby-identifier">squeeze</span>(<span class="ruby-string">&quot; &quot;</span>)
 
@@ -224,7 +234,9 @@ and the application exits</p>
   <span class="ruby-keyword">end</span>
 
   <span class="ruby-keyword">unless</span> <span class="ruby-identifier">entries</span>.<span class="ruby-identifier">include?</span> <span class="ruby-identifier">command</span>
+    <span class="ruby-identifier">entries</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-constant">PRE_COMMENT</span>
     <span class="ruby-identifier">entries</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">command</span>
+    <span class="ruby-identifier">entries</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-constant">POST_COMMENT</span>
 
     <span class="ruby-identifier">cron_entries_file</span> = <span class="ruby-constant">CRON_ENTRIES_FILE</span> 
     <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">cron_entries_file</span>, <span class="ruby-string">'w'</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span>
@@ -275,7 +287,7 @@ after the values have been written to crontab</p>
 
           
           <div class="method-source-code" id="cleanup-source">
-            <pre><span class="ruby-comment"># File lib/backup/cron_edit.rb, line 123</span>
+            <pre><span class="ruby-comment"># File lib/backup/cron_edit.rb, line 132</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">cleanup</span>
   <span class="ruby-constant">File</span>.<span class="ruby-identifier">delete</span> <span class="ruby-constant">CRON_ENTRIES_FILE</span> <span class="ruby-keyword">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exists?</span> <span class="ruby-constant">CRON_ENTRIES_FILE</span>
 <span class="ruby-keyword">end</span></pre>
@@ -310,7 +322,7 @@ crontab call fails the error message and exit status of
 
           
           <div class="method-source-code" id="remove_command-source">
-            <pre><span class="ruby-comment"># File lib/backup/cron_edit.rb, line 75</span>
+            <pre><span class="ruby-comment"># File lib/backup/cron_edit.rb, line 82</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">remove_command</span>(<span class="ruby-identifier">command</span>)
   <span class="ruby-identifier">command</span> = <span class="ruby-identifier">command</span>.<span class="ruby-identifier">strip</span>.<span class="ruby-identifier">squeeze</span>(<span class="ruby-string">&quot; &quot;</span>)
 
@@ -332,9 +344,11 @@ crontab call fails the error message and exit status of
 
   <span class="ruby-identifier">entries</span> = <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">split</span>(<span class="ruby-regexp">%r\n/</span>).<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">entry</span><span class="ruby-operator">|</span> <span class="ruby-identifier">entry</span>.<span class="ruby-identifier">strip</span>.<span class="ruby-identifier">squeeze</span>(<span class="ruby-string">&quot; &quot;</span>)}
 
+  <span class="ruby-identifier">entries</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-constant">PRE_COMMENT</span>)
   <span class="ruby-identifier">entries</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">command</span>)
+  <span class="ruby-identifier">entries</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-constant">POST_COMMENT</span>)
 
-  <span class="ruby-identifier">cron_entries_file</span> = <span class="ruby-constant">CRON_ENTRIES_FILE</span> <span class="ruby-comment">#&quot;.cron_entries&quot;</span>
+  <span class="ruby-identifier">cron_entries_file</span> = <span class="ruby-constant">CRON_ENTRIES_FILE</span>
 
   <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">cron_entries_file</span>, <span class="ruby-string">'w'</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">file</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">entries</span>.<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">entry</span><span class="ruby-operator">|</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">puts</span> <span class="ruby-identifier">entry</span>}

@@ -115,28 +115,43 @@ command is added to crontab.</p>
 <p><a href="Backup.html">Backup</a> a database to the default folder
 _~/backup_</p>
 
-<pre>$ sycup -d database -uuser -ppass</pre>
+<pre>$ sycbackup -d database -uuser -ppass</pre>
 
 <p><a href="Backup.html">Backup</a> a MySQL database, a directory and files to
 the default folder</p>
 
-<pre>$ sycup -d database -uuser -ppass -f directory,file1,file2</pre>
+<pre>$ sycbackup -d database -uuser -ppass -f directory,file1,file2</pre>
 
 <p>Specify a backup folder</p>
 
-<pre>$ sycup backup/folder -d database -uuser -ppass -f directory,file1,file2</pre>
+<pre>$ sycbackup backup/folder -d database -uuser -ppass -f directory,file1,file2</pre>
 
 <p>Override files in the backup folder if they exist</p>
 
-<pre>$ sycup backup/folder --override -f directory,file1,file2</pre>
+<pre>$ sycbackup backup/folder --override -f directory,file1,file2</pre>
 
 <p>Don’t compress the backup</p>
 
-<pre>$ sycup --no-compress -f directory,file1,file2</pre>
+<pre>$ sycbackup --no-compress -f directory,file1,file2</pre>
 
 <p>Create a cron job that is scheduled every day at 2:30</p>
 
-<pre>$ sycup -d database -uuser -ppass -f directory,file1 --cron 30,2,*,*,*</pre>
+<pre>$ sycbackup -d database -uuser -ppass -f directory,file1 --cron 30,2,*,*,*</pre>
+
+<p>If the user or password contains characters as ‘(’ you have to escape them.
+A password like 123(56 has to be provided with pass"123\\(56".</p>
+
+<h2 id="label-Usage+of+--override+and+--no-compress">Usage of –override and –no-compress</h2>
+
+<p>Whether the backup directory and the backup files are time stamped depends
+how –override and –no-compress is set. The results are shown in the table
+below.</p>
+
+<pre>--override      --no-compress     backup directory      backup file(s)
+     0                0            w/o timestamp         w/ timestamp
+     1                0            w/o timestamp         w/ timestamp
+     0                1            w/  timestamp         uncompressed
+     1                1            w/o timestamp         uncompressed</pre>
 
 <h2 id="label-Supported+Platform">Supported Platform</h2>
 
@@ -166,6 +181,10 @@ finish. <em>MySQLBackup</em> needs to run a MySQL database with a database
 <em>test</em> and a user <em>user</em> with the password <em>pass</em>.</p>
 
 <p>The test files live in the test folder and begin with test_.</p>
+
+<p>There is a rake file available which can be used to run all tests with</p>
+
+<pre>$ rake test</pre>
 
 <h2 id="label-Links">Links</h2>
 <ul><li><dl class="rdoc-list label-list"><dt><a href="http://sugaryourcoffee.github.com/syc-backup">sugaryourcoffee.github.com/syc-backup</a>
