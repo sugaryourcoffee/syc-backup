@@ -74,10 +74,7 @@ module Backup
     # displayed and the application exits. If the method runs without errors
     # the tar file is returned
     def compress_files_and_copy
-      timestamp = ""
-      unless @override
-       timestamp = Time.now.strftime("%Y%m%d-%H%M%S") + '_'
-      end
+      timestamp = Time.now.strftime("%Y%m%d-%H%M%S") + '_'
       tar_file = @backup_folder + timestamp + "syc-backup.tar.gz" 
       tar_command = "tar cfz #{tar_file} #{@files.join(" ")}"
 
