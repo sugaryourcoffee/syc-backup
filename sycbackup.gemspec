@@ -4,8 +4,7 @@ require 'backup_version'
 Gem::Specification.new do |s|
   s.name         = "syc-backup"
   s.summary      = %q{Back up a database and files}
-  s.description  = %q{Back up a database and files or schedule cron job 
-                      for backup}
+  s.description  = File.read(File.join(File.dirname(__FILE__), 'README.rdoc'))
   s.requirements = ['No requirements']
   s.version      = Backup::VERSION
   s.author       = "Pierre Sugar"
