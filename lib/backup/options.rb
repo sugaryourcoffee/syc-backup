@@ -25,6 +25,9 @@ module Backup
     # Determines whether to compress the backup if not to compress it returns
     # false, otherwise true
     attr_reader :no_compress
+    # Specifies the maximum backup files to keep. Count < 1 means infinite
+    # backup files
+    attr_reader :max_backups
 
     # Takes the arguments from the command line and parses them
     def initialize(argv)
@@ -156,6 +159,12 @@ module Backup
                 "dow = day of week   1..7",
                 "30 3 * * * will run the cron job at 3:30am") do |c|
           @cron = validate_cron_values c.split(/ /).slice(0..4)
+        end
+
+        opts.on("-m", "--max-backups COUNT", Integer,
+                "The maximum compressed backup files count",
+                "to keep") do |m|
+          @max_backups = m
         end
 
         opts.on("-v", "--version", "Show version") do |v|

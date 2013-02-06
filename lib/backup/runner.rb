@@ -66,7 +66,8 @@ module Backup
       process = Process.new(@options.backup_folder,
                             files, 
                             @options.override, 
-                            @options.no_compress)
+                            @options.no_compress,
+                            @options.max_backups)
       process.backup
       puts "--> backed up files"
       puts "    #{files.join("\n    ")}"

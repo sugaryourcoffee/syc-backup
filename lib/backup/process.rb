@@ -14,11 +14,12 @@ module Backup
     # provided the files in the backup folder are overridden. no_compress will
     # prevent compressing the backed up files and will just copy them to the
     # provided backup folder
-    def initialize(backup_folder, files, override, no_compress)
+    def initialize(backup_folder, files, override, no_compress, max_backups = 9)
       @backup_folder = backup_folder
       @files = files
       @override = override
       @no_compress = no_compress
+      @max_backups = max_backups
     end
 
     # Creates the backup of the database and the files. If at least one of the
@@ -38,11 +39,31 @@ module Backup
         copy_files 
       else
         compress_files_and_copy
+        delete_old_backups
       end
 
     end
 
     private
+
+    # Checks if the files exceed the max backups denoted by @max_backups and
+    # respectively deletes the oldest files to meet the @max_backups count.
+    # @max_backups less than 1 is equivalent to infinite backup count, so no
+    # files will be deleted and 0 is returned otherwise the count of files
+    # deleted is returned.
+    def delete_old_backups
+      return 0 if @max_backups < 1
+
+      pattern = "#{@backup_folder}*-*_syc-backup.tar.gz"
+      files = Dir.glob(pattern).sort_by {|f| File.mtime(f)}
+      
+      file_count_to_delete = [0, files.count-@max_backups].max
+      return 0 if file_count_to_delete == 0
+
+      files.first(file_count_to_delete).each {|f| File.delete f}
+
+      file_count_to_delete
+    end
 
     # Checks if files to backup have been provided that don't exist. Returns the
     # inexistent files
