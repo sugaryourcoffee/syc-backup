@@ -19,7 +19,7 @@ module Backup
     def run
       if @options.cron
         create_cron
-      else
+      elsif @options.database or @options.file
         create_backup
       end
     end
@@ -42,6 +42,7 @@ module Backup
                  ' -u'  + @options.user + 
                  ' -p'  + @options.password if @options.database
       command += ' -f ' + @options.files.join(',') if @options.files
+      command += ' -m ' + @options.max_backups if @options.max_backups
       command += ' --no-compress' if @options.no_compress
       command += ' --override' if @options.override
 
