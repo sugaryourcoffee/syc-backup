@@ -25,7 +25,7 @@ Create a cron job that is scheduled every day at 2:30
     $ sycbackup -d database -uuser -ppass -f directory,file1 --cron 30,2,*,*,*
 
 If the user or password contains characters as '(' you have to escape
-them. A password like 123(56 has to be provided with pass\"123\\\\(56\".
+them. A password like 123(56 has to be provided with pass\"123\(56\".
 
 == Usage of --override and --no-compress
 Whether the backup directory and the backup files are time stamped depends how
