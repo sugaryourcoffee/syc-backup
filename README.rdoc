@@ -15,6 +15,9 @@ Backup a MySQL database, a directory and files to the default folder
 Specify a backup folder
     $ sycbackup backup/folder -d database -uuser -ppass -f directory,file1,file2
 
+We want to keep a maximum count of 10 backups 
+    $ sycbackup backup/folder -f directory,file1,file2 -m 10
+
 Override files in the backup folder if they exist
     $ sycbackup backup/folder --override -f directory,file1,file2
 
@@ -25,7 +28,7 @@ Create a cron job that is scheduled every day at 2:30
     $ sycbackup -d database -uuser -ppass -f directory,file1 --cron 30,2,*,*,*
 
 If the user or password contains characters as '(' you have to escape
-them. A password like 123(56 has to be provided with pass\"123\(56\".
+them. A password like 123(56 has to be provided with pass\\"123\(56\\".
 
 == Usage of --override and --no-compress
 Whether the backup directory and the backup files are time stamped depends how
@@ -58,7 +61,6 @@ There is a rake file available which can be used to run all tests with
     $ rake test
 
 == Links
-* [http://sugaryourcoffee.github.com/syc-backup] - RubyDoc
 * [http://www.github.com/sugaryourcoffee/syc-backup] - Source code on GitHub
 * [http://syc.dyndns.org/drupal/content/backup-drupal-database] - Development notebook
 * [https://rubygems.org/gems/syc-backup] - RubyGems
