@@ -37,21 +37,22 @@ module Backup
 
       if @no_compress 
         copy_files 
+        delete_uncompressed_backups
       else
         compress_files_and_copy
-        delete_old_backups
+        delete_compressed_backups
       end
 
     end
 
     private
 
-    # Checks if the files exceed the max backups denoted by @max_backups and
-    # respectively deletes the oldest files to meet the @max_backups count.
-    # @max_backups less than 1 is equivalent to infinite backup count, so no
-    # files will be deleted and 0 is returned otherwise the count of files
-    # deleted is returned.
-    def delete_old_backups
+    # Checks if the compressed backups exceed the max backups denoted by 
+    # @max_backups and respectively deletes the oldest files to meet the 
+    # @max_backups count. @max_backups less than 1 is equivalent to infinite 
+    # backup count, so no files will be deleted and 0 is returned otherwise 
+    # the count of files deleted is returned.
+    def delete_compressed_backups
       return 0 if @max_backups < 1
 
       pattern = "#{@backup_folder}*-*_syc-backup.tar.gz"
@@ -63,6 +64,14 @@ module Backup
       files.first(file_count_to_delete).each {|f| File.delete f}
 
       file_count_to_delete
+    end
+
+    # Checks if the uncompressed backups exceed the max backups denoted by 
+    # @max_backups and respectively deletes the oldest files to meet the 
+    # @max_backups count. @max_backups less than 1 is equivalent to infinite 
+    # backup count, so no files will be deleted and 0 is returned otherwise 
+    # the count of files deleted is returned.
+    def delete_uncompressed_backups
     end
 
     # Checks if files to backup have been provided that don't exist. Returns the
